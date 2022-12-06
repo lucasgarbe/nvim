@@ -17,9 +17,15 @@ keymap("n", "<S-l>", ":bnext<cr>", opts)
 keymap("n", "<S-h>", ":bprevious<cr>", opts)
 
 -- telescope / fzf
-keymap("n", "<C-p>", ":Files <cr>", opts)
-keymap("n", "<C-b>", ":Buffers <cr>", opts)
-keymap("n", "<C-f>", ":Rg <cr>", opts)
+-- keymap("n", "<C-p>", ":Files <cr>", opts)
+-- keymap("n", "<C-b>", ":Buffers <cr>", opts)
+-- keymap("n", "<C-f>", ":Rg <cr>", opts)
+
+-- better horizontal movements
+keymap("", "<C-u>", "<C-u>zz", opts)
+keymap("", "<C-d>", "<C-d>zz", opts)
+keymap("", "n", "nzzzv", opts)
+keymap("", "N", "Nzzzv", opts)
 
 -- search highlight
 keymap("n", "<esc>", ":noh <cr>", opts)

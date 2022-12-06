@@ -83,6 +83,9 @@ return {
         "wp-cli",
         "polylang"
       },
+      environment = {
+        includePaths = "/home/lucasgarbe/.composer/vendor/php-stubs/"
+      },
       files = {
         maxSize = 5000000;
       },

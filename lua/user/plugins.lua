@@ -44,12 +44,15 @@ return packer.startup(function(use)
     use "nvim-lua/plenary.nvim" -- Useful lua functions used ny lots of plugins
     use {
         "nvim-telescope/telescope.nvim",
-        "nvim-telescope/telescope-ui-select.nvim"
+        "nvim-telescope/telescope-ui-select.nvim",
+        "nvim-telescope/telescope-file-browser.nvim"
     }
+
+    use {"nvim-telescope/telescope-fzf-native.nvim", run = 'make'}
 
     use "base16-project/base16-vim"
     -- use "chriskempson/base16-vim"
-    use "preservim/nerdtree"
+    -- use "preservim/nerdtree"
     use "tpope/vim-surround"
     use "tpope/vim-commentary"
     use "tpope/vim-fugitive"
@@ -75,6 +78,8 @@ return packer.startup(function(use)
         "neovim/nvim-lspconfig",
     }
 
+    -- use "glepnir/lspsaga.nvim"
+
     use({
         "hrsh7th/nvim-cmp",
         requires = {
@@ -83,7 +88,6 @@ return packer.startup(function(use)
             'saadparwaiz1/cmp_luasnip'
         }
     })
-
     -- Automatically set up your configuration after cloning packer.nvim
     -- Put this at the end after all plugins
     if PACKER_BOOTSTRAP then

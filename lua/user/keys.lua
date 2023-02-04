@@ -31,4 +31,4 @@ keymap("", "N", "Nzzzv", opts)
 keymap("n", "<esc>", ":noh <cr>", opts)
 
 -- nerdtree
-keymap("n", "<C-n>", ":NERDTreeToggle<cr>", opts)
+-- keymap("n", "<C-n>", ":NERDTreeToggle<cr>", opts)

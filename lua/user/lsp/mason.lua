@@ -17,10 +17,14 @@ mason.setup()
 mason_lspconfig.setup()
 
 lspconfig.sumneko_lua.setup(require("user.lsp.settings.sumneko_lua"))
+
 lspconfig.intelephense.setup(require("user.lsp.settings.intelephense"))
 
+-- lspconfig.phpactor.setup({})
 
 lspconfig.jsonls.setup({})
+
+lspconfig.gopls.setup({})
 
 lspconfig.tsserver.setup({
   -- on_attach = on_attach,

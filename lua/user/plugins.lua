@@ -76,6 +76,7 @@ return packer.startup(function(use)
         "williamboman/mason.nvim",
         "williamboman/mason-lspconfig.nvim",
         "neovim/nvim-lspconfig",
+        "jose-elias-alvarez/null-ls.nvim"
     }
 
     -- use "glepnir/lspsaga.nvim"

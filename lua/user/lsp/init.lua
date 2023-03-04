@@ -18,7 +18,7 @@ local null_ls = require("null-ls")
 local servers = {
 	"clangd",
 	"tsserver",
-	"sumneko_lua",
+	"lua_ls",
 	"gopls",
 	"intelephense",
 	"jdtls",
@@ -119,7 +119,7 @@ end
 --     capabilities = capabilities,
 -- })
 
-lspconfig.sumneko_lua.setup({
+lspconfig.lua_ls.setup({
 	on_attach = on_attach,
 	capabilities = capabilities,
 	settings = {
@@ -287,7 +287,8 @@ vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(vim.lsp.diagn
 })
 
 -- Diagnostic symbols in the sign column (gutter)
-local signs = { Error = " ", Warn = " ", Hint = " ", Info = " " }
+-- local signs = { Error = " ", Warn = " ", Hint = " ", Info = " " }
+local signs = { Error = "E", Warn = "W", Hint = "H", Info = "I" }
 for type, icon in pairs(signs) do
 	local hl = "DiagnosticSign" .. type
 	vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
@@ -309,7 +310,7 @@ null_ls.setup({
 		null_ls.builtins.formatting.prettierd.with({
 			extra_filetypes = { "php" },
 		}),
-		null_ls.builtins.completion.spell,
+		-- null_ls.builtins.completion.spell,
 	},
 	on_attach = on_attach,
 })

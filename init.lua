@@ -84,6 +84,8 @@ I hope you enjoy your Neovim journey,
 P.S. You can delete this when you're done too. It's your config now! :)
 --]]
 
+home = os.getenv 'HOME'
+
 -- Set <space> as the leader key
 -- See `:help mapleader`
 --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
@@ -102,7 +104,7 @@ vim.g.have_nerd_font = false
 vim.opt.number = true
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
--- vim.opt.relativenumber = true
+vim.opt.relativenumber = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.opt.mouse = 'a'
@@ -658,6 +660,131 @@ require('lazy').setup {
             },
           },
         },
+
+        intelephense = {
+          root_dir = function(fname)
+            return vim.loop.cwd()
+          end,
+          settings = {
+            intelephense = {
+              files = {
+                maxSize = 1000000,
+                associations = { '*.php', '*.phtml' },
+                exclude = {
+                  '**/.git/**',
+                  '**/.svn/**',
+                  '**/.hg/**',
+                  '**/CVS/**',
+                  '**/.DS_Store/**',
+                  '**/node_modules/**',
+                  '**/bower_components/**',
+                  '**/vendor/**/{Tests,tests}/**',
+                },
+              },
+              environment = {
+                phpVersion = '8.2', -- Set to your PHP version
+                includePaths = { home .. '/.composer/vendor/php-stubs/' },
+              },
+              stubs = {
+                -- Standard stubs
+                'apache',
+                'bcmath',
+                'bz2',
+                'calendar',
+                'com_dotnet',
+                'Core',
+                'ctype',
+                'curl',
+                'date',
+                'dba',
+                'dom',
+                'enchant',
+                'exif',
+                'FFI',
+                'fileinfo',
+                'filter',
+                'fpm',
+                'ftp',
+                'gd',
+                'gettext',
+                'gmp',
+                'hash',
+                'iconv',
+                'imap',
+                'intl',
+                'json',
+                'ldap',
+                'libxml',
+                'mbstring',
+                'meta',
+                'mysqli',
+                'oci8',
+                'odbc',
+                'openssl',
+                'pcntl',
+                'pcre',
+                'PDO',
+                'pdo_ibm',
+                'pdo_mysql',
+                'pdo_pgsql',
+                'pdo_sqlite',
+                'pgsql',
+                'Phar',
+                'posix',
+                'pspell',
+                'readline',
+                'Reflection',
+                'session',
+                'shmop',
+                'SimpleXML',
+                'snmp',
+                'soap',
+                'sockets',
+                'sodium',
+                'SPL',
+                'sqlite3',
+                'standard',
+                'superglobals',
+                'sysvmsg',
+                'sysvsem',
+                'sysvshm',
+                'tidy',
+                'tokenizer',
+                'xml',
+                'xmlreader',
+                'xmlrpc',
+                'xmlwriter',
+                'xsl',
+                'Zend OPcache',
+                'zip',
+                'zlib',
+                -- Add frameworks
+                'phpunit',
+                'laravel',
+                'symfony',
+                'wordpress',
+                'woocommerce',
+                'acf-pro',
+                'wordpress-globals',
+                'wp-cli',
+                'polylang',
+              },
+              completion = {
+                maxItems = 100,
+                insertUseDeclaration = true,
+                fullyQualifyGlobalConstantsAndFunctions = false,
+                triggerParameterHints = true,
+                triggerSignatureHelp = true,
+              },
+              format = {
+                enable = true,
+              },
+              diagnostics = {
+                enable = true,
+              },
+            },
+          },
+        },
       }
 
       -- Ensure the servers and tools above are installed
@@ -919,6 +1046,71 @@ require('lazy').setup {
   'tpope/vim-fugitive',
   'base16-project/base16-vim',
   'stevearc/oil.nvim',
+
+  -- {
+  --   'yetone/avante.nvim',
+  --   event = 'VeryLazy',
+  --   lazy = false,
+  --   version = false, -- Set this to "*" to always pull the latest release version, or set it to false to update to the latest code changes.
+  --   opts = {
+  --     -- add any opts here
+  --     -- for example
+  --     provider = 'copilot',
+  --     -- claude = {
+  --     --   endpoint = 'https://api.anthropic.com',
+  --     --   model = 'claude-3-5-sonnet-20241022',
+  --     --   temperature = 0,
+  --     --   max_tokens = 4096,
+  --     -- },
+  --     -- openai = {
+  --     --   endpoint = 'https://api.openai.com/v1',
+  --     --   model = 'gpt-4o', -- your desired model (or use gpt-4o, etc.)
+  --     --   timeout = 30000, -- timeout in milliseconds
+  --     --   temperature = 0, -- adjust if needed
+  --     --   max_tokens = 4096,
+  --     -- },
+  --   },
+  --   -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`
+  --   build = 'make',
+  --   -- build = "powershell -ExecutionPolicy Bypass -File Build.ps1 -BuildFromSource false" -- for windows
+  --   dependencies = {
+  --     'stevearc/dressing.nvim',
+  --     'nvim-lua/plenary.nvim',
+  --     'MunifTanjim/nui.nvim',
+  --     --- The below dependencies are optional,
+  --     'echasnovski/mini.pick', -- for file_selector provider mini.pick
+  --     'nvim-telescope/telescope.nvim', -- for file_selector provider telescope
+  --     'hrsh7th/nvim-cmp', -- autocompletion for avante commands and mentions
+  --     'ibhagwan/fzf-lua', -- for file_selector provider fzf
+  --     'nvim-tree/nvim-web-devicons', -- or echasnovski/mini.icons
+  --     'zbirenbaum/copilot.lua', -- for providers='copilot'
+  --     {
+  --       -- support for image pasting
+  --       'HakonHarnes/img-clip.nvim',
+  --       event = 'VeryLazy',
+  --       opts = {
+  --         -- recommended settings
+  --         default = {
+  --           embed_image_as_base64 = false,
+  --           prompt_for_file_name = false,
+  --           drag_and_drop = {
+  --             insert_mode = true,
+  --           },
+  --           -- required for Windows users
+  --           use_absolute_path = true,
+  --         },
+  --       },
+  --     },
+  --     {
+  --       -- Make sure to set this up properly if you have lazy=true
+  --       'MeanderingProgrammer/render-markdown.nvim',
+  --       opts = {
+  --         file_types = { 'markdown', 'Avante' },
+  --       },
+  --       ft = { 'markdown', 'Avante' },
+  --     },
+  --   },
+  -- },
 
   -- The following comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and

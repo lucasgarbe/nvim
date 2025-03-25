@@ -99,9 +99,9 @@ vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower win
 vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 
 -- navigate buffers
-vim.keymap.set('n', '<S-l>', ':bnext<cr>', opts)
-vim.keymap.set('n', '<S-h>', ':bprevious<cr>', opts)
-vim.keymap.set('n', '<C-w>', ':bd<cr>', opts)
+vim.keymap.set('n', '<S-l>', ':bnext<cr>')
+vim.keymap.set('n', '<S-h>', ':bprevious<cr>')
+vim.keymap.set('n', '<C-w>', ':bd<cr>')
 
 -- fugitive
 vim.keymap.set('n', '<C-g>', ':Git<cr>', { desc = 'open fugitive' })
@@ -533,6 +533,8 @@ require('lazy').setup {
             require('lspconfig')[server_name].setup(server)
           end,
         },
+        ensure_installed = {},
+        automatic_installation = true,
       }
     end,
   },
@@ -554,6 +556,7 @@ require('lazy').setup {
     opts = {
       notify_on_error = false,
       format_on_save = function(bufnr)
+        local disable_filetypes = { c = true, cpp = true }
         local lsp_format_opt
         if disable_filetypes[vim.bo[bufnr].filetype] then
           lsp_format_opt = 'never'

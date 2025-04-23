@@ -82,26 +82,20 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 -- or just use <C-\><C-n> to exit terminal mode
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 
--- TIP: Disable arrow keys in normal mode
--- vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
--- vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move!!"<CR>')
--- vim.keymap.set('n', '<up>', '<cmd>echo "Use k to move!!"<CR>')
--- vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move!!"<CR>')
-
 -- Keybinds to make split navigation easier.
 --  Use CTRL+<hjkl> to switch between windows
 --
 --  See `:help wincmd` for a list of all window commands
 --  navigate panes
-vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left window' })
-vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
-vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
-vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
+vim.keymap.set('n', '<C-h>', '<C-w>h', { noremap = true, desc = 'Move focus to the left window' })
+vim.keymap.set('n', '<C-l>', '<C-w>l', { noremap = true, desc = 'Move focus to the right window' })
+vim.keymap.set('n', '<C-j>', '<C-w>j', { noremap = true, desc = 'Move focus to the lower window' })
+vim.keymap.set('n', '<C-k>', '<C-w>k', { noremap = true, desc = 'Move focus to the upper window' })
 
 -- navigate buffers
 vim.keymap.set('n', '<S-l>', ':bnext<cr>')
 vim.keymap.set('n', '<S-h>', ':bprevious<cr>')
-vim.keymap.set('n', '<C-w>', ':bd<cr>')
+vim.keymap.set('n', '<C-q>', ':bd<cr>')
 
 -- fugitive
 vim.keymap.set('n', '<C-g>', ':Git<cr>', { desc = 'open fugitive' })
@@ -386,6 +380,36 @@ require('lazy').setup {
               completion = {
                 callSnippet = 'Replace',
               },
+            },
+          },
+        },
+        harper_ls = {
+          settings = {
+            filetypes = {
+              'c',
+              'cpp',
+              'cs',
+              'gitcommit',
+              'go',
+              'html',
+              'java',
+              'javascript',
+              'lua',
+              'markdown',
+              'nix',
+              'python',
+              'ruby',
+              'rust',
+              'swift',
+              'toml',
+              'typescript',
+              'typescriptreact',
+              'haskell',
+              'cmake',
+              'typst',
+              'php',
+              'dart',
+              'tex',
             },
           },
         },
@@ -723,60 +747,13 @@ require('lazy').setup {
   'mattn/emmet-vim',
 
   {
-    'yetone/avante.nvim',
-    event = 'VeryLazy',
-    lazy = false,
-    version = false, -- Set this to "*" to always pull the latest release version, or set it to false to update to the latest code changes.
-    opts = {
-      -- add any opts here
-      -- for example
-      provider = 'claude',
-      claude = {
-        endpoint = 'https://api.anthropic.com',
-        model = 'claude-3-5-sonnet-20241022',
-        temperature = 0,
-        max_tokens = 4096,
-        disable_tools = true,
-      },
-    },
-    build = 'make',
-    dependencies = {
-      'stevearc/dressing.nvim',
-      'nvim-lua/plenary.nvim',
-      'MunifTanjim/nui.nvim',
-      --- The below dependencies are optional,
-      'echasnovski/mini.pick', -- for file_selector provider mini.pick
-      'nvim-telescope/telescope.nvim', -- for file_selector provider telescope
-      'hrsh7th/nvim-cmp', -- autocompletion for avante commands and mentions
-      'ibhagwan/fzf-lua', -- for file_selector provider fzf
-      'nvim-tree/nvim-web-devicons', -- or echasnovski/mini.icons
-      'zbirenbaum/copilot.lua', -- for providers='copilot'
-      {
-        -- support for image pasting
-        'HakonHarnes/img-clip.nvim',
-        event = 'VeryLazy',
-        opts = {
-          -- recommended settings
-          default = {
-            embed_image_as_base64 = false,
-            prompt_for_file_name = false,
-            drag_and_drop = {
-              insert_mode = true,
-            },
-            -- required for Windows users
-            use_absolute_path = true,
-          },
-        },
-      },
-      {
-        -- Make sure to set this up properly if you have lazy=true
-        'MeanderingProgrammer/render-markdown.nvim',
-        opts = {
-          file_types = { 'markdown', 'Avante' },
-        },
-        ft = { 'markdown', 'Avante' },
-      },
-    },
+    'lervag/vimtex',
+    lazy = false, -- we don't want to lazy load VimTeX
+    -- tag = "v2.15", -- uncomment to pin to a specific release
+    init = function()
+      -- VimTeX configuration goes here, e.g.
+      -- vim.g.vimtex_view_method = 'zathura'
+    end,
   },
 }
 

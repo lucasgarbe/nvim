@@ -95,7 +95,7 @@ vim.keymap.set('n', '<C-k>', '<C-w>k', { noremap = true, desc = 'Move focus to t
 -- navigate buffers
 vim.keymap.set('n', '<S-l>', ':bnext<cr>')
 vim.keymap.set('n', '<S-h>', ':bprevious<cr>')
-vim.keymap.set('n', '<C-q>', ':bd<cr>')
+vim.keymap.set('n', '<C-w>', ':bd<cr>')
 
 -- fugitive
 vim.keymap.set('n', '<C-g>', ':Git<cr>', { desc = 'open fugitive' })
@@ -326,6 +326,7 @@ require('lazy').setup {
           map('<leader>cr', vim.lsp.buf.rename, '[C]ode [R]ename')
           map('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction', { 'n', 'x' })
           map('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
+          map('<leader>i', vim.diagnostic.open_float, '[I]nspect diagnostics')
 
           -- The following two autocommands are used to highlight references of the
           -- word under your cursor when your cursor rests there for a little while.
@@ -384,33 +385,37 @@ require('lazy').setup {
           },
         },
         harper_ls = {
+          filetypes = {
+            'c',
+            'cpp',
+            'cs',
+            'gitcommit',
+            'go',
+            'html',
+            'java',
+            'javascript',
+            'lua',
+            'markdown',
+            'nix',
+            'python',
+            'ruby',
+            'rust',
+            'swift',
+            'toml',
+            'typescript',
+            'typescriptreact',
+            'haskell',
+            'cmake',
+            'typst',
+            'php',
+            'dart',
+            'tex',
+          },
+          root_dir = function(fname)
+            return vim.loop.cwd()
+          end,
           settings = {
-            filetypes = {
-              'c',
-              'cpp',
-              'cs',
-              'gitcommit',
-              'go',
-              'html',
-              'java',
-              'javascript',
-              'lua',
-              'markdown',
-              'nix',
-              'python',
-              'ruby',
-              'rust',
-              'swift',
-              'toml',
-              'typescript',
-              'typescriptreact',
-              'haskell',
-              'cmake',
-              'typst',
-              'php',
-              'dart',
-              'tex',
-            },
+            dialect = 'British',
           },
         },
 
@@ -745,6 +750,7 @@ require('lazy').setup {
   'base16-project/base16-vim',
   'stevearc/oil.nvim',
   'mattn/emmet-vim',
+  'github/copilot.vim',
 
   {
     'lervag/vimtex',
@@ -765,6 +771,11 @@ local current_theme_name = os.getenv 'BASE16_THEME'
 if current_theme_name and vim.g.colors_name ~= 'base16-' .. current_theme_name then
   vim.cmd('colorscheme base16-' .. current_theme_name)
 end
+
+-- vim.diagnostic.config {
+--   virtual_text = false,
+--   float = {},
+-- }
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et

@@ -67,6 +67,8 @@ vim.opt.scrolloff = 10
 vim.opt.tabstop = 2
 vim.opt.shiftwidth = 2
 
+vim.opt.swapfile = false
+
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
@@ -154,8 +156,8 @@ require('lazy').setup {
         vim.keymap.set('n', '<leader>ghR', gitsigns.reset_buffer)
         vim.keymap.set('n', '<leader>ghp', gitsigns.preview_hunk)
         vim.keymap.set('n', '<leader>ghi', gitsigns.preview_hunk_inline)
-        vim.keymap.set('n', '<leader>gh[', gitsigns.next_hunk)
-        vim.keymap.set('n', '<leader>gh]', gitsigns.next_hunk)
+        vim.keymap.set('n', '<leader>g]', ':Gitsigns nav_hunk next')
+        vim.keymap.set('n', '<leader>g[', ':Gitsigns nav_hunk prev')
       end,
     },
   },
@@ -220,7 +222,7 @@ require('lazy').setup {
   {
     'nvim-telescope/telescope.nvim',
     event = 'VimEnter',
-    branch = '0.1.x',
+    -- branch = '0.1.x',
     dependencies = {
       'nvim-lua/plenary.nvim',
       { -- If encountering errors, see telescope-fzf-native README for installation instructions
@@ -337,7 +339,7 @@ require('lazy').setup {
           --
           -- When you move your cursor, the highlights will be cleared (the second autocommand).
           local client = vim.lsp.get_client_by_id(event.data.client_id)
-          if client and client.supports_method(vim.lsp.protocol.Methods.textDocument_documentHighlight) then
+          if client and client:supports_method(vim.lsp.protocol.Methods.textDocument_documentHighlight) then
             local highlight_augroup = vim.api.nvim_create_augroup('kickstart-lsp-highlight', { clear = false })
             vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
               buffer = event.buf,
@@ -364,7 +366,7 @@ require('lazy').setup {
           -- code, if the language server you are using supports them
           --
           -- This may be unwanted, since they displace some of your code
-          if client and client.supports_method(vim.lsp.protocol.Methods.textDocument_inlayHint) then
+          if client and client:supports_method(vim.lsp.protocol.Methods.textDocument_inlayHint) then
             map('<leader>th', function()
               vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = event.buf })
             end, '[T]oggle Inlay [H]ints')
@@ -383,6 +385,23 @@ require('lazy').setup {
             Lua = {
               completion = {
                 callSnippet = 'Replace',
+              },
+            },
+          },
+        },
+        ruff = {
+          on_attach = function(client, bufnr)
+            client.server_capabilities.hoverProvider = false
+          end,
+        },
+        pyright = {
+          settings = {
+            pyright = {
+              disableOrganizeImports = true,
+            },
+            python = {
+              analysis = {
+                ignore = { '*' },
               },
             },
           },
@@ -732,21 +751,26 @@ require('lazy').setup {
   },
   {
     'nvim-treesitter/nvim-treesitter',
+    branch = 'main',
     build = ':TSUpdate',
-    main = 'nvim-treesitter.configs',
-    -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
-    opts = {
-      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
-      auto_install = true,
-      highlight = {
-        enable = true,
-        -- Some languages depend on vim's regex highlighting system (such as Ruby) for indent rules.
-        --  If you are experiencing weird indenting issues, add the language to
-        --  the list of additional_vim_regex_highlighting and disabled languages for indent.
-        additional_vim_regex_highlighting = { 'ruby' },
-      },
-      indent = { enable = true, disable = { 'ruby' } },
-    },
+    config = function()
+      require('nvim-treesitter').setup {}
+
+      vim.api.nvim_create_autocmd('FileType', {
+        pattern = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
+        callback = function()
+          vim.treesitter.start()
+        end,
+      })
+
+      vim.api.nvim_create_autocmd('FileType', {
+        pattern = 'ruby',
+        callback = function()
+          vim.treesitter.start()
+          vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+        end,
+      })
+    end,
   },
 
   'tpope/vim-fugitive',
@@ -754,6 +778,40 @@ require('lazy').setup {
   'stevearc/oil.nvim',
   'mattn/emmet-vim',
   'github/copilot.vim',
+  'dhruvasagar/vim-table-mode',
+
+  {
+    'toppair/peek.nvim',
+    event = { 'VeryLazy' },
+    build = 'deno task --quiet build:fast',
+    config = function()
+      require('peek').setup {
+        theme = 'light',
+      }
+      vim.api.nvim_create_user_command('PeekOpen', require('peek').open, {})
+      vim.api.nvim_create_user_command('PeekClose', require('peek').close, {})
+    end,
+  },
+
+  -- {
+  --   'iamcco/markdown-preview.nvim',
+  --   cmd = { 'MarkdownPreviewToggle', 'MarkdownPreview', 'MarkdownPreviewStop' },
+  --   build = 'cd app && pnpm install',
+  --   init = function()
+  --     vim.g.mkdp_filetypes = { 'markdown' }
+  --   end,
+  --   ft = { 'markdown' },
+  -- },
+
+  -- {
+  --   'MeanderingProgrammer/render-markdown.nvim',
+  --   dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.nvim' }, -- if you use the mini.nvim suite
+  --   -- dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.icons' }, -- if you use standalone mini plugins
+  --   -- dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-tree/nvim-web-devicons' }, -- if you prefer nvim-web-devicons
+  --   ---@module 'render-markdown'
+  --   ---@type render.md.UserConfig
+  --   opts = {},
+  -- },
 
   {
     'lervag/vimtex',
@@ -762,6 +820,114 @@ require('lazy').setup {
     init = function()
       -- VimTeX configuration goes here, e.g.
       -- vim.g.vimtex_view_method = 'zathura'
+    end,
+  },
+
+  {
+    'supermaven-inc/supermaven-nvim',
+    config = function()
+      require('supermaven-nvim').setup {
+        keymaps = {
+          accept_suggestion = '<C-v>',
+          clear_suggestion = '<C-x>',
+          accept_word = '<C-c>',
+        },
+      }
+    end,
+  },
+
+  {
+    'ThePrimeagen/99',
+    config = function()
+      local _99 = require '99'
+
+      -- For logging that is to a file if you wish to trace through requests
+      -- for reporting bugs, i would not rely on this, but instead the provided
+      -- logging mechanisms within 99.  This is for more debugging purposes
+      local cwd = vim.uv.cwd()
+      local basename = vim.fs.basename(cwd)
+      _99.setup {
+        -- model = 'anthropic/claude-sonnet-4-5',
+        -- model = 'zai-coding-plan/glm-4.7-flash',
+        -- model = 'opencode/kimi-k2.5-free',
+        -- model = 'ollama/ministral-3',
+        -- model = 'ollama/qwen3:latest',
+        logger = {
+          level = _99.DEBUG,
+          path = '/tmp/' .. basename .. '.99.debug',
+          print_on_error = true,
+        },
+        --- A new feature that is centered around tags
+        completion = {
+          --- Defaults to .cursor/rules
+          -- I am going to disable these until i understand the
+          -- problem better.  Inside of cursor rules there is also
+          -- application rules, which means i need to apply these
+          -- differently
+          -- cursor_rules = "<custom path to cursor rules>"
+
+          --- A list of folders where you have your own SKILL.md
+          --- Expected format:
+          --- /path/to/dir/<skill_name>/SKILL.md
+          ---
+          --- Example:
+          --- Input Path:
+          --- "scratch/custom_rules/"
+          ---
+          --- Output Rules:
+          --- {path = "scratch/custom_rules/vim/SKILL.md", name = "vim"},
+          --- ... the other rules in that dir ...
+          ---
+          custom_rules = {
+            'scratch/custom_rules/',
+          },
+
+          --- What autocomplete do you use.  We currently only
+          --- support cmp right now
+          source = 'cmp',
+        },
+
+        --- WARNING: if you change cwd then this is likely broken
+        --- ill likely fix this in a later change
+        ---
+        --- md_files is a list of files to look for and auto add based on the location
+        --- of the originating request.  That means if you are at /foo/bar/baz.lua
+        --- the system will automagically look for:
+        --- /foo/bar/AGENT.md
+        --- /foo/AGENT.md
+        --- assuming that /foo is project root (based on cwd)
+        md_files = {
+          'AGENT.md',
+        },
+      }
+
+      -- Create your own short cuts for the different types of actions
+      vim.keymap.set('n', '<leader>9f', function()
+        _99.fill_in_function()
+      end)
+      -- take extra note that i have visual selection only in v mode
+      -- technically whatever your last visual selection is, will be used
+      -- so i have this set to visual mode so i dont screw up and use an
+      -- old visual selection
+      --
+      -- likely ill add a mode check and assert on required visual mode
+      -- so just prepare for it now
+      vim.keymap.set('v', '<leader>99', function()
+        _99.visual_prompt()
+      end)
+
+      --- if you have a request you dont want to make any changes, just cancel it
+      vim.keymap.set('v', '<leader>9s', function()
+        _99.stop_all_requests()
+      end)
+
+      --- Example: Using rules + actions for custom behaviors
+      --- Create a rule file like ~/.rules/debug.md that defines custom behavior.
+      --- For instance, a "debug" rule could automatically add printf statements
+      --- throughout a function to help debug its execution flow.
+      vim.keymap.set('n', '<leader>9fd', function()
+        _99.fill_in_function()
+      end)
     end,
   },
 }
@@ -780,13 +946,13 @@ vim.diagnostic.config {
   float = {},
 }
 
-vim.keymap.set('i', '<C-v>', 'copilot#Accept("\\<CR>")', {
-  expr = true,
-  replace_keycodes = false,
-})
-vim.g.copilot_no_tab_map = true
-
-vim.keymap.set('n', '<leader>cc', ':Copilot setup<CR>', { desc = 'Setup Copilot' })
+-- vim.keymap.set('i', '<C-v>', 'copilot#Accept("\\<CR>")', {
+--   expr = true,
+--   replace_keycodes = false,
+-- })
+-- vim.g.copilot_no_tab_map = true
+--
+-- vim.keymap.set('n', '<leader>cc', ':Copilot setup<CR>', { desc = 'Setup Copilot' })
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
